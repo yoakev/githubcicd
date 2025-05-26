@@ -6,43 +6,28 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  laravel-tests:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, bcmath, curl, dom, fileinfo, json, openssl, pdo, tokenizer, xml
-        tools: composer
+        extensions: mbstring, bcmath, curl
+        coverage: none
 
-    - name: Install dependencies
-      run: composer install --no-interaction --prefer-dist
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist
 
-    - name: Generate app key
+    - name: Copy .env.example to .env
+      run: cp .env.example .env
+
+    - name: Generate APP_KEY
       run: php artisan key:generate
 
-    - name: Run Laravel tests
+    - name: Run Laravel Tests
       run: php artisan test
-
-    - name: Deploy via SSH (percobaan)
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: 123.456.789.0          # <- Ganti dengan IP VPS/server kamu
-        username: root               # <- Atau user SSH-mu
-        key: |
-          -----BEGIN OPENSSH PRIVATE KEY-----
-          isi private key kamu di sini
-          -----END OPENSSH PRIVATE KEY-----
-        port: 22
-        script: |
-          cd /var/www/html/projectku   # <- Ganti ke direktori project Laravel-mu
-          git pull origin main
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          php artisan migrate --force
-          php artisan config:cache
 
