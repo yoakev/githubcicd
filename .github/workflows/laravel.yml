@@ -45,12 +45,15 @@ jobs:
       run: sudo apt-get update && sudo apt-get install zip -y
 
     - name: Create zip file
-      run: |
-        zip -r laravel-artifact.zip . -x ".git/*" "vendor/*" "node_modules/*" ".github/*"
+      run: zip -r laravel-artifact.zip . -x "vendor/*" "node_modules/*"
+
+    - name: List files for debugging
+      run: ls -lah
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: laravel-artifact
         path: laravel-artifact.zip
+
 
