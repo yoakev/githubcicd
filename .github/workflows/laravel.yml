@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout source code
+      uses: actions/checkout@v3
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -34,21 +35,22 @@ jobs:
   zip:
     needs: test
     runs-on: ubuntu-latest
-    if: success()
+    if: ${{ success() }}
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout source code
+      uses: actions/checkout@v3
 
-    - name: Setup zip
+    - name: Install zip
       run: sudo apt-get update && sudo apt-get install zip -y
 
-    - name: Create deploy zip file
+    - name: Create zip file
       run: |
-        zip -r laravel-deploy.zip . -x ".git/*" "node_modules/*" "vendor/*" ".github/*"
+        zip -r laravel-artifact.zip . -x ".git/*" "vendor/*" "node_modules/*" ".github/*"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: laravel-artifact
-        path: laravel-deploy.zip
+        path: laravel-artifact.zip
 
